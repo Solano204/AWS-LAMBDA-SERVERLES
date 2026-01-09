@@ -1,0 +1,146 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  photo-app-users-api-cognito
+
+Globals:
+  Function:
+    Timeout: 20
+    Runtime: java11
+    Architectures:
+      - x86_64
+    MemorySize: 512
+    Environment:
+      Variables:
+        # Your encrypted values
+        MY_COGNITO_POOL_APP_CLIENT_ID: AQICAHgy3gFprB0pIOfS4RHNnIzvcGlvE+4qbEOLr4udhtGmvAE5RHZKWPsc/lLdKoWDLYLlAAAAeDB2BgkqhkiG9w0BBwagaTBnAgEAMGIGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMzjV9obOb4jCNxh7QAgEQgDVKoQWBa8fBom21luQ/L1N9Wso8VFdHJahgpVzM+7JwprvVDMLp22U0xW72QUxjz5RjmdWl0Q==
+        MY_COGNITO_POOL_APP_CLIENT_SECRET: AQICAHgy3gFprB0pIOfS4RHNnIzvcGlvE+4qbEOLr4udhtGmvAGJ1EHE7TWKYiaV6SbfOPXRAAAAlTCBkgYJKoZIhvcNAQcGoIGEMIGBAgEAMHwGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMraJ5Q5mQw3tpFE0OAgEQgE/S3ucfqmzZk3COa958uLabilJSsE0QAjk6yHIvkCwHsK1xJm+5xLQlThOoLCG1/PqFE/rF0SarsVzELLlPmQhHmdVq6NtCXZKVCQBFahTR
+        MY_COGNITO_POOL_ID: AQICAHgy3gFprB0pIOfS4RHNnIzvcGlvE+4qbEOLr4udhtGmvAFWOPA6EteHRJ6jdXo6rh9PAAAAcTBvBgkqhkiG9w0BBwagYjBgAgEAMFsGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQM/6UlgTi/BOMKOjhWAgEQgC4JQXddFtFPgtwyBOpxq3yOI+X5eHZKmCb5R7f8HNdzxHSntFQ34InaqhOfvoeR
+
+Resources:
+  MyApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+
+  CreateUserHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: PhotoAppUsersAPICognito
+      Handler: com.appsdeveloperblog.aws.lambda.CreateUserHandler::handleRequest
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: kms:Decrypt
+              Resource: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:key/7e45badd-842c-4aa9-9575-d9a93409ab11"
+      Events:
+        CreateUser:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: post
+            RestApiId:
+              Ref: MyApi
+
+  ConfirmUserHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: PhotoAppUsersAPICognito
+      Handler: com.appsdeveloperblog.aws.lambda.ConfirmUserHandler::handleRequest
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: kms:Decrypt
+              Resource: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:key/7e45badd-842c-4aa9-9575-d9a93409ab11"
+      Events:
+        ConfirmUser:
+          Type: Api
+          Properties:
+            Path: /confirm
+            Method: post
+            RestApiId:
+              Ref: MyApi
+
+  LoginUserHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: PhotoAppUsersAPICognito
+      Handler: com.appsdeveloperblog.aws.lambda.LoginUserHandler::handleRequest
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: kms:Decrypt
+              Resource: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:key/7e45badd-842c-4aa9-9575-d9a93409ab11"
+      Events:
+        LoginUser:
+          Type: Api
+          Properties:
+            Path: /login
+            Method: post
+            RestApiId:
+              Ref: MyApi
+
+  AddUserToGroupHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: PhotoAppUsersAPICognito
+      Handler: com.appsdeveloperblog.aws.lambda.AddUserToGroupHandler::handleRequest
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: 'cognito-idp:AdminAddUserToGroup'
+              Resource: !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/us-east-1_TW7zniqNg"
+        - Statement:
+            - Effect: Allow
+              Action: kms:Decrypt
+              Resource: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:key/7e45badd-842c-4aa9-9575-d9a93409ab11"
+      Events:
+        AddUserToGroup:
+          Type: Api
+          Properties:
+            Path: /users/{userName}/add-to-group
+            Method: post
+            RestApiId:
+              Ref: MyApi
+
+  GetUserHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: PhotoAppUsersAPICognito
+      Handler: com.appsdeveloperblog.aws.lambda.GetUserHandler::handleRequest
+      Events:
+        GetUser:
+          Type: Api
+          Properties:
+            Path: /users/me
+            Method: get
+            RestApiId:
+              Ref: MyApi
+
+  LambdaAuthorizerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: PhotoAppUsersAPICognito
+      Handler: com.appsdeveloperblog.aws.lambda.authorizer.LambdaAuthorizer::handleRequest
+
+  GetUserByUsernameHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: PhotoAppUsersAPICognito
+      Handler: com.appsdeveloperblog.aws.lambda.GetUserByUsernameHandler::handleRequest
+      Events:
+        GetUserByUsername:
+          Type: Api
+          Properties:
+            Path: /users/{userName}
+            Method: get
+            RestApiId:
+              Ref: MyApi
+
+Outputs:
+  CreateUserApi:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/users"
+  CreateUserHandlerFunction:
+    Description: "CreateUserHandler Lambda Function ARN"
+    Value: !GetAtt CreateUserHandlerFunction.Arn

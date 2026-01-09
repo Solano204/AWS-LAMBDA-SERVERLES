@@ -1,0 +1,2 @@
+# Get the latest Lambda logs
+aws logs tail /aws/lambda/braintrust-post-handler --follow

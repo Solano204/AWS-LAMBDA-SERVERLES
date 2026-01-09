@@ -1,0 +1,30 @@
+application_url = "http://98.92.35.223:8080"
+deployment_command = "scp -i cloudmart-key.pem target/cloudmart-backend-0.0.1-SNAPSHOT.jar ec2-user@98.92.35.223:/home/ec2-user/app/app.jar && ssh -i cloudmart-key.pem ec2-user@98.92.35.223 'sudo systemctl start cloudmart'"
+ec2_public_ip = "98.92.35.223"
+lambda_api_endpoint = "https://o9ho6bz2wl.execute-api.us-east-1.amazonaws.com/"
+next_steps = <<EOT
+🎉 Infrastructure Created Successfully!
+
+Next Steps:
+1. Confirm your SNS email subscription (check your inbox)
+2. Update application.yml with these values:
+   - RDS Endpoint: cloudmart-db.cmvmio282tyf.us-east-1.rds.amazonaws.com:3306
+   - S3 Bucket: cloudmart-images-2024-carlos
+   - SQS URL: https://sqs.us-east-1.amazonaws.com/765288911542/cloudmart-order-queue
+   - SNS ARN: arn:aws:sns:us-east-1:765288911542:cloudmart-order-notifications
+3. Build your JAR: mvn clean package
+4. Deploy: scp
+              -i
+              cloudmart-key.pem
+              target/cloudmart-backend-0.0.1-SNAPSHOT.jar
+              ec2-user@98.92.35.223:/home/ec2-user/app/app.jar
+5. Start service: ssh and run 'sudo systemctl start cloudmart'
+6. Access your app: http://98.92.35.223:8080
+
+EOT
+rds_endpoint = "cloudmart-db.cmvmio282tyf.us-east-1.rds.amazonaws.com:3306"
+s3_bucket_name = "cloudmart-images-2024-carlos"
+sns_topic_arn = "arn:aws:sns:us-east-1:765288911542:cloudmart-order-notifications"
+sqs_queue_url = "https://sqs.us-east-1.amazonaws.com/765288911542/cloudmart-order-queue"
+ssh_command = "ssh -i cloudmart-key.pem ec2-user@98.92.35.223"
+vpc_id = "vpc-064a4dc82b3a2fc59"

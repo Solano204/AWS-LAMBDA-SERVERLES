@@ -1,0 +1,24 @@
+# === SECURITY (No Cap, hide these!) ===
+*.pem
+.env
+aws_credentials
+terraform.tfvars
+cloudmart-key.pem
+
+# === TERRAFORM BINARIES (The 685MB Boss) ===
+.terraform/
+*.tfstate*
+.terraform.lock.hcl
+
+# === JAVA / GRADLE / MAVEN ===
+build/
+target/
+.gradle/
+*.class
+dependency-reduced-pom.xml
+
+# === IDE & OS TRASH ===
+.idea/
+.vscode/
+.DS_Store
+*.log

@@ -1,0 +1,11 @@
+./mvnw clean package -DskipTests
+
+scp -i "/c/Users/GAMER/Downloads/cloudmart-key.pem.pem" target/
+
+cloudmart-backend-1.0.0.jar ec2-user@13.221.153.250:/home/ec2-user/app.jar
+
+ssh -i "/c/Users/GAMER/Downloads/cloudmart-key.pem.pem" ec2-user@13.221.153.250
+
+pkill -f java
+
+java -jar -Dspring.profiles.active=prod app.jar

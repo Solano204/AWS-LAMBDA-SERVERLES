@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: cloudmart-backend
+
+  profiles:
+    active: prod
+
+  datasource:
+    url: jdbc:mysql://cloudmart-db.cmvmio282tyf.us-east-1.rds.amazonaws.com:3306/cloudmart?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: admin
+    password: 76i765i8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+
+server:
+  port: 8080
+
+aws:
+  region: us-east-1
+
+  s3:
+    bucket-name: cloudmart-images-2024-carlos
+    product-images-prefix: products/
+    max-file-size: 5242880
+
+  dynamodb:
+    table-name: cloudmart-cart
+
+  sqs:
+    order-queue-url: https://sqs.us-east-1.amazonaws.com/765288911542/cloudmart-order-queue
+    consumer:
+      enabled: true
+      max-messages: 5
+
+  sns:
+    order-topic-arn: arn:aws:sns:us-east-1:765288911542:cloudmart-order-notifications
+
+  secrets:
+    enabled: false
+    db-secret-name: cloudmart/db/credentials
+
+  parameter-store:
+    enabled: false
+
+jwt:
+  secret: cloudmart-super-secret-jwt-key-change-this-to-something-very-secure-256-bits-minimum
+  expiration: 86400000
+
+app:
+  cors:
+    allowed-origins: http://localhost:3000,http://localhost:5173,http://98.92.35.223:3000,http://98.92.35.223:8080
+
+  swagger:
+    servers: http://98.92.35.223:8080,http://localhost:8080
+
+  upload:
+    allowed-extensions: jpg,jpeg,png,webp
+    max-file-size: 5242880
+
+logging:
+  level:
+    com.cloudmartbackend: INFO
+    com.cloudmartbackend.cloudmart.worker: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: INFO
